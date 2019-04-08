@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import * as faceapi from 'face-api.js';
 import Webcam from "react-webcam";
 import orderBy from 'lodash.orderby'
+import joker from './joker.jpg'
 import './App.css';
 
 class App extends Component {
@@ -11,22 +12,32 @@ class App extends Component {
   constructor(){
     super();
     this.state = {
-      expresion: ""
+      expresion: "",
+      timerId: null
     }
     this.webcam = React.createRef();
+  }
+  analyse = async () => {
+    console.log("called");
+    this.setState({expresion: ""});
+    var image = new Image();
+    image.src = this.webcam.getScreenshot();
+    const detectionsWithExpressions = await faceapi.detectAllFaces(image).withFaceExpressions();
+    console.log(detectionsWithExpressions)
+    if(detectionsWithExpressions && detectionsWithExpressions[0].expressions != undefined) {
+      this.setState({expresion: orderBy(detectionsWithExpressions[0].expressions, ['probability'], ['desc'])[0]['expression']});
+    }
   }
   async componentDidMount(){
     await faceapi.loadFaceDetectionModel("/models")
     await faceapi.loadFaceExpressionModel("/models")
     await faceapi.loadSsdMobilenetv1Model('/models')
+    const timerId =setInterval(() => this.analyse(), 2000);
+    this.setState({timerId});
   }
-  analyse = async () => {
-    this.setState({expresion: ""});
-    var image = new Image();
-    image.src = this.webcam.getScreenshot();
-    const detectionsWithExpressions = await faceapi.detectAllFaces(image).withFaceExpressions();
-    this.setState({expresion: orderBy(detectionsWithExpressions[0].expressions, ['probability'], ['desc'])[0]['expression']});
-    console.log(detectionsWithExpressions)
+  getSuccess() {
+    clearInterval(this.state.timerId);
+    return <img className="joker" src="https://media.giphy.com/media/KEVNWkmWm6dm8/giphy.gif" />;
   }
   render() {
     const videoConstraints = {
@@ -37,6 +48,7 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
+          {this.state.expresion === "happy" ? this.getSuccess() : <img className="joker" src={joker}/>}
           <Webcam
             audio={false}
             height={350}
