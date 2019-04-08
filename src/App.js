@@ -25,7 +25,12 @@ class App extends Component {
     const detectionsWithExpressions = await faceapi.detectAllFaces(image).withFaceExpressions();
     console.log(detectionsWithExpressions)
     if(detectionsWithExpressions && detectionsWithExpressions[0].expressions != undefined) {
-      this.setState({expresion: orderBy(detectionsWithExpressions[0].expressions, ['probability'], ['desc'])[0]['expression']});
+      this.setState(
+        {
+          image: image.src,
+          expresion: orderBy(detectionsWithExpressions[0].expressions, ['probability'], ['desc'])[0]['expression']
+        }
+        );
     }
   }
   async componentDidMount(){
@@ -37,7 +42,12 @@ class App extends Component {
   }
   getSuccess() {
     clearInterval(this.state.timerId);
-    return <img className="joker" src="https://media.giphy.com/media/KEVNWkmWm6dm8/giphy.gif" />;
+    return (
+      <div className="container">
+        <img className="joker" src="https://media.giphy.com/media/KEVNWkmWm6dm8/giphy.gif" />
+        <img className="happy" src={this.state.image} />
+      </div>
+    )
   }
   render() {
     const videoConstraints = {

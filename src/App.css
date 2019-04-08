@@ -4,7 +4,20 @@
 
 .joker {
   height: 100%;
-  width: 100%
+  width: 100%;
+}
+
+.container {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+.happy {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 200px;
+  height: 200px;
 }
 
 .App-header {
