@@ -2,7 +2,7 @@
   "name": "y_so_serious",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://dnivra26.github.io/why_so_serious/",
+  "homepage": "https://dnivra26.github.io/y_so_serious/",
   "dependencies": {
     "face-api.js": "^0.19.0",
     "lodash.orderby": "^4.6.0",
