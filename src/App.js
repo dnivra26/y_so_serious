@@ -24,20 +24,23 @@ class App extends Component {
     image.src = this.webcam.getScreenshot();
     const detectionsWithExpressions = await faceapi.detectAllFaces(image).withFaceExpressions();
     console.log(detectionsWithExpressions)
-    if(detectionsWithExpressions && detectionsWithExpressions[0].expressions != undefined) {
+    if(detectionsWithExpressions && detectionsWithExpressions.length != 0) {
       this.setState(
         {
           image: image.src,
           expresion: orderBy(detectionsWithExpressions[0].expressions, ['probability'], ['desc'])[0]['expression']
         }
         );
+      if(this.state.expresion == "neutral") {
+          this.setState({oldImage: image.src});
+      }
     }
   }
   async componentDidMount(){
     await faceapi.loadFaceDetectionModel("/models")
     await faceapi.loadFaceExpressionModel("/models")
     await faceapi.loadSsdMobilenetv1Model('/models')
-    const timerId =setInterval(() => this.analyse(), 2000);
+    const timerId =setInterval(() => this.analyse(), 1000);
     this.setState({timerId});
   }
   getSuccess() {
@@ -46,6 +49,7 @@ class App extends Component {
       <div className="container">
         <img className="joker" src="https://media.giphy.com/media/KEVNWkmWm6dm8/giphy.gif" />
         <img className="happy" src={this.state.image} />
+        <img className="nothappy" src={this.state.oldImage} />
       </div>
     )
   }
